@@ -12,7 +12,7 @@
     },
     "require-dev": {
         "geocoder-php/provider-integration-tests": "^1.0",
-        "openeuropa/code-review": "~0.2",
+        "openeuropa/code-review": "dev-use-psr2",
         "php-http/curl-client": "^1.7",
         "phpunit/phpunit": "~6.3"
     },
