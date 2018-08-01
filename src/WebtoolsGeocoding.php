@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace OpenEuropa\Provider\WebtoolsGeocoding;
 
@@ -19,31 +19,20 @@ use Http\Client\HttpClient;
 /**
  * Webtools Geocoding provider for Geocoder PHP.
  */
-class WebtoolsGeocoding extends AbstractHttpProvider implements Provider {
-    /**
-     * @var string
-     */
-    const ENDPOINT_URL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text=%s';
+class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
+{
 
     /**
      * @var string
      */
-    const REVERSE_ENDPOINT_URL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location=%F,%F';
+    const ENDPOINT_URL = 'http://europa.eu/webtools/rest/geocoding/?address=%s&mode=%d&locale=%s';
 
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    protected $sourceCountry;
-
-    /**
-     * @param HttpClient $client        An HTTP adapter
-     * @param string     $sourceCountry Country biasing (optional)
-     */
-    public function __construct(HttpClient $client, string $sourceCountry = null)
+    public function getName(): string
     {
-        parent::__construct($client);
-
-        $this->sourceCountry = $sourceCountry;
+        return 'webtools_geocoding';
     }
 
     /**
@@ -52,8 +41,8 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider {
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
         $address = $query->getText();
-        if (filter_var($address, FILTER_VALIDATE_IP)) {
-            throw new UnsupportedOperation('The ArcGISOnline provider does not support IP addresses, only street addresses.');
+        if (\filter_var($address, FILTER_VALIDATE_IP)) {
+            throw new UnsupportedOperation('The WebtoolsGeocoding provider does not support IP addresses, only street addresses.');
         }
 
         // Save a request if no valid address entered
@@ -61,43 +50,41 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider {
             throw new InvalidArgument('Address cannot be empty.');
         }
 
-        $url = sprintf(self::ENDPOINT_URL, urlencode($address));
-        $json = $this->executeQuery($url, $query->getLimit());
+        $url = sprintf(self::ENDPOINT_URL, urlencode($address), $query->getLimit(), $query->getLocale());
+        $content = $this->getUrlContents($url);
+        $json = \json_decode($content);
 
-        // no result
-        if (empty($json->locations)) {
+        if (empty($json)) {
+            throw InvalidServerResponse::create($url);
+        }
+
+        if (empty($json->geocodingRequestsCollection)) {
             return new AddressCollection([]);
         }
 
         $results = [];
-        foreach ($json->locations as $location) {
-            $data = $location->feature->attributes;
-
-            $coordinates = (array) $location->feature->geometry;
-            $streetName = !empty($data->StAddr) ? $data->StAddr : null;
-            $streetNumber = !empty($data->AddNum) ? $data->AddNum : null;
-            $city = !empty($data->City) ? $data->City : null;
-            $zipcode = !empty($data->Postal) ? $data->Postal : null;
-            $countryCode = !empty($data->Country) ? $data->Country : null;
-
-            $adminLevels = [];
-            foreach (['Region', 'Subregion'] as $i => $property) {
-                if (!empty($data->{$property})) {
-                    $adminLevels[] = ['name' => $data->{$property}, 'level' => $i + 1];
-                }
+        foreach ($json->geocodingRequestsCollection as $collection) {
+            if (empty($collection->result->features)) {
+                continue;
             }
 
-            $results[] = Address::createFromArray([
-                'providedBy' => $this->getName(),
-                'latitude' => $coordinates['y'],
-                'longitude' => $coordinates['x'],
-                'streetNumber' => $streetNumber,
-                'streetName' => $streetName,
-                'locality' => $city,
-                'postalCode' => $zipcode,
-                'adminLevels' => $adminLevels,
-                'countryCode' => $countryCode,
-            ]);
+            foreach ($collection->result->features as $feature) {
+                $address_data = $this->deduceAddressData($feature);
+
+                $results[] = Address::createFromArray([
+                    'providedBy' => $this->getName(),
+                    'latitude' => $address_data['latitude'],
+                    'longitude' => $address_data['longitude'],
+                    'streetNumber' => $address_data['streetNumber'],
+                    'streetName' => $address_data['streetName'],
+                    'locality' => $address_data['locality'],
+                    'postalCode' => $address_data['postalCode'],
+                    'adminLevels' => $address_data['adminLevels'],
+                    // The country is not currently returned by the Webtools
+                    // Geocoding API.
+                    'countryCode' => null,
+                ]);
+            }
         }
 
         return new AddressCollection($results);
@@ -108,81 +95,147 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider {
      */
     public function reverseQuery(ReverseQuery $query): Collection
     {
-        $coordinates = $query->getCoordinates();
-        $longitude = $coordinates->getLongitude();
-        $latitude = $coordinates->getLatitude();
-
-        $url = sprintf(self::REVERSE_ENDPOINT_URL, $longitude, $latitude);
-        $json = $this->executeQuery($url, $query->getLimit());
-
-        if (property_exists($json, 'error')) {
-            return new AddressCollection([]);
-        }
-
-        $data = $json->address;
-
-        $streetName = !empty($data->Address) ? $data->Address : null;
-        $city = !empty($data->City) ? $data->City : null;
-        $zipcode = !empty($data->Postal) ? $data->Postal : null;
-        $region = !empty($data->Region) ? $data->Region : null;
-        $county = !empty($data->Subregion) ? $data->Subregion : null;
-        $countryCode = !empty($data->CountryCode) ? $data->CountryCode : null;
-
-        return new AddressCollection([
-            Address::createFromArray([
-                'providedBy' => $this->getName(),
-                'latitude' => $latitude,
-                'longitude' => $longitude,
-                'streetName' => $streetName,
-                'locality' => $city,
-                'postalCode' => $zipcode,
-                'region' => $region,
-                'countryCode' => $countryCode,
-                'county' => $county,
-            ]),
-        ]);
+        throw new UnsupportedOperation('The Webtools Geocoding provider does not support reverse geocoding.');
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getName(): string
-    {
-        return 'arcgis_online';
-    }
-
-    /**
-     * @param string $query
-     * @param int    $limit
+     * Attempts to deduce some address fields from the supplied data.
      *
-     * @return string
-     */
-    protected function buildQuery(string $query, int $limit): string
-    {
-        if (null !== $this->sourceCountry) {
-            $query = sprintf('%s&sourceCountry=%s', $query, $this->sourceCountry);
-        }
-
-        return sprintf('%s&maxLocations=%d&f=%s&outFields=*', $query, $limit, 'json');
-    }
-
-    /**
-     * @param string $url
-     * @param int    $limit
+     * The Webtools Geocoding API currently does not return address data in
+     * discrete fields. Instead it returns a 'formatted address' which seems to
+     * adhere to country specific formats. Unfortunately the country is not
+     * included in the address so it is practically impossible to deduce which
+     * format was used.
      *
-     * @return \stdClass
+     * This makes some basic assumptions like the street address being in the
+     * first section.
+     *
+     * This is not to be relied upon for production use. A request has been
+     * filed with the Webtools team to make the discrete data available.
+     *
+     * @param \stdClass $feature
+     *   The location feature JSON object, as returned by the Webtools Geocoding
+     *   REST API.
+     *
+     * @return array
+     *   An array of estimated address data, with the following keys:
+     *   - streetNumber: the street number.
+     *   - streetName: the street name.
+     *   - locality: the locality.
+     *   - postalCode: the postal code.
+     *   - longitude: the longitude.
+     *   - latitude: the latitude.
+     *   - adminLevels: an array of administration levels.
      */
-    protected function executeQuery(string $url, int $limit): \stdClass
+    protected function deduceAddressData(\stdClass $feature): array
     {
-        $url = $this->buildQuery($url, $limit);
-        $content = $this->getUrlContents($url);
-        $json = json_decode($content);
+        $address_data = [
+            'streetNumber' => null,
+            'streetName' => null,
+            'locality' => null,
+            'postalCode' => null,
+            'longitude' => null,
+            'latitude' => null,
+        ];
 
-        // API error
-        if (!isset($json)) {
-            throw InvalidServerResponse::create($url);
+        if (!empty($feature->geometry->coordinates)) {
+            list($longitude, $latitude) = $feature->geometry->coordinates;
+            $address_data['longitude'] = $longitude;
+            $address_data['latitude'] = $latitude;
         }
 
-        return $json;
+        if (empty($feature->properties->formattedAddress)) {
+            return $address_data;
+        }
+
+        $parts = explode(',', $feature->properties->formattedAddress);
+        $parts = array_map('trim', $parts);
+
+        // We're assuming that the first part contains both numbers and letters
+        // it is the street name and number.
+        if ($this->containsLetter($parts[0]) && $this->containsNumber($parts[0])) {
+            $street = array_shift($parts);
+
+            // We're assuming that the street number will contain at least 1 number
+            // and will be located either at the start or the end.
+            $street_parts = array_map('trim', explode(' ', $street));
+
+            if ($this->containsNumber(reset($street_parts))) {
+                $address_data['streetNumber'] = array_shift($street_parts);
+            }
+            elseif ($this->containsNumber(end($street_parts))) {
+                $address_data['streetNumber'] = array_pop($street_parts);
+            }
+
+            // Use the remainder of the street as the street name.
+            if (!empty($street_parts)) {
+                $address_data['streetName'] = implode(' ', $street_parts);
+            }
+        }
+
+        // Try to detect the postal code with different filters.
+        $postal_code_filters = [
+             // First check if any of the parts consists entirely of numbers.
+             function (string $value): bool {
+                 return preg_match('/^\d+$/', $value) === 1;
+             },
+
+             // Check if any of the parts consists predominantly of numbers.
+             function (string $value): bool {
+                 $number_count = preg_match_all('/\d/', $value);
+                 $other_count = preg_match_all('/[^\d]/', $value);
+                 return $number_count > $other_count;
+             },
+
+             // Finally, just return the first part that contains any number.
+             function (string $value): bool {
+                 return preg_match('/\d/', $value) === 1;
+             },
+        ];
+
+        foreach ($postal_code_filters as $postal_code_filter) {
+            $filtered_parts = array_filter($parts, $postal_code_filter);
+            if (!empty($filtered_parts)) {
+                // Set the first result as the postal code and remove it from
+                // the set of parts.
+                $address_data['postalCode'] = reset($filtered_parts);
+                unset($parts[key($filtered_parts)]);
+                break;
+            }
+        }
+
+        // For the locality, assume that the first part that doesn't contain any
+        // numbers is the locality. This is just a best guess but it will at
+        // least filter out data like floor numbers, office numbers etc.
+        foreach ($parts as $key => $part) {
+            if (!$this->containsNumber($part)) {
+                $address_data['locality'] = $part;
+                unset($parts[$key]);
+                break;
+            }
+        }
+
+        // Expose all that remains as admin levels.
+        $admin_levels = [];
+        foreach (array_values($parts) as $i => $part) {
+            if (!empty($part)) {
+                $admin_levels[] = ['name' => $part, 'level' => $i + 1];
+            }
+        }
+
+        $address_data['adminLevels'] = $admin_levels;
+
+        return $address_data;
     }
+
+    protected function containsNumber(string $string): bool
+    {
+        return preg_match('/\d/', $string) === 1;
+    }
+
+    protected function containsLetter(string $string): bool
+    {
+        return preg_match('/\p{L}/', $string) === 1;
+    }
+
 }
