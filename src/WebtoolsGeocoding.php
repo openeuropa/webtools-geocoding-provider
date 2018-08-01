@@ -8,13 +8,12 @@ use Geocoder\Collection;
 use Geocoder\Exception\InvalidArgument;
 use Geocoder\Exception\InvalidServerResponse;
 use Geocoder\Exception\UnsupportedOperation;
+use Geocoder\Http\Provider\AbstractHttpProvider;
 use Geocoder\Model\Address;
 use Geocoder\Model\AddressCollection;
+use Geocoder\Provider\Provider;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
-use Geocoder\Http\Provider\AbstractHttpProvider;
-use Geocoder\Provider\Provider;
-use Http\Client\HttpClient;
 
 /**
  * Webtools Geocoding provider for Geocoder PHP.
@@ -138,21 +137,26 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
             'latitude' => null,
         ];
 
+        // Populate the geographical coordinates.
         if (!empty($feature->geometry->coordinates)) {
             list($longitude, $latitude) = $feature->geometry->coordinates;
             $address_data['longitude'] = $longitude;
             $address_data['latitude'] = $latitude;
         }
 
+        // The 'formatted address' is the best chance we have at retrieving the
+        // data. If this is not present then don't even bother.
         if (empty($feature->properties->formattedAddress)) {
             return $address_data;
         }
 
+        // Split up the comma separated field into discrete parts.
         $parts = explode(',', $feature->properties->formattedAddress);
         $parts = array_map('trim', $parts);
 
-        // We're assuming that the first part contains both numbers and letters
-        // it is the street name and number.
+        // We're assuming that if the first part contains both numbers and
+        // letters then it is the street name and number. If it doesn't then we
+        // are assuming the street is not included in the data.
         if ($this->containsLetter($parts[0]) && $this->containsNumber($parts[0])) {
             $street = array_shift($parts);
 
@@ -187,7 +191,8 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
                  return $number_count > $other_count;
              },
 
-             // Finally, just return the first part that contains any number.
+             // Finally, we are happy if we can even find a part that contains
+             // any number.
              function (string $value): bool {
                  return preg_match('/\d/', $value) === 1;
              },
@@ -218,7 +223,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
         // Expose all that remains as admin levels.
         $admin_levels = [];
         foreach (array_values($parts) as $i => $part) {
-            if (!empty($part)) {
+            if (!empty($part) && !$this->containsNumber($part)) {
                 $admin_levels[] = ['name' => $part, 'level' => $i + 1];
             }
         }
