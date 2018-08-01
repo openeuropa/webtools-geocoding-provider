@@ -69,11 +69,11 @@ class WebtoolsGeocodingTest extends BaseTestCase
         $this->assertEquals('Avenue Gambetta', $result->getStreetName());
         $this->assertEquals(75020, $result->getPostalCode());
         $this->assertEquals('Paris', $result->getLocality());
+        $this->assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
 
         // The following data is not returned yet in the current implementation
         // of the Webtools Geocoding API.
         true || $this->assertCount(2, $result->getAdminLevels());
-        true || $this->assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
         true || $this->assertEquals('Paris', $result->getAdminLevels()->get(2)->getName());
         true || $this->assertEquals('FRA', $result->getCountry()->getCode());
     }

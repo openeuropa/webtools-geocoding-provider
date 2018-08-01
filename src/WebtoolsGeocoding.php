@@ -223,9 +223,10 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
 
         // Expose all that remains as admin levels.
         $admin_levels = [];
-        foreach (array_values($parts) as $i => $part) {
+        $i = 1;
+        foreach (array_values($parts) as $part) {
             if (!empty($part) && !$this->containsNumber($part)) {
-                $admin_levels[] = ['name' => $part, 'level' => $i + 1];
+                $admin_levels[] = ['name' => $part, 'level' => $i++];
             }
         }
 
