@@ -72,10 +72,10 @@ class WebtoolsGeocodingTest extends BaseTestCase
 
         // The following data is not returned yet in the current implementation
         // of the Webtools Geocoding API.
-        TRUE || $this->assertCount(2, $result->getAdminLevels());
-        TRUE || $this->assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
-        TRUE || $this->assertEquals('Paris', $result->getAdminLevels()->get(2)->getName());
-        TRUE || $this->assertEquals('FRA', $result->getCountry()->getCode());
+        true || $this->assertCount(2, $result->getAdminLevels());
+        true || $this->assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
+        true || $this->assertEquals('Paris', $result->getAdminLevels()->get(2)->getName());
+        true || $this->assertEquals('FRA', $result->getCountry()->getCode());
     }
 
     /**
@@ -89,11 +89,11 @@ class WebtoolsGeocodingTest extends BaseTestCase
         $this->assertInstanceOf('Geocoder\Model\AddressCollection', $results);
         $this->assertCount(5, $results);
 
-        $result_found = FALSE;
+        $result_found = false;
         /** @var Location $result */
         foreach ($results as $result) {
             if ($result->getAdminLevels()->get(1)->getName() === $region) {
-                $result_found = TRUE;
+                $result_found = true;
 
                 $this->assertInstanceOf('\Geocoder\Model\Address', $result);
                 $this->assertEquals($longitude, $result->getCoordinates()->getLongitude(), '', 0.0001);
@@ -107,8 +107,8 @@ class WebtoolsGeocodingTest extends BaseTestCase
 
                 // The following data is not returned yet in the current implementation
                 // of the Webtools Geocoding API.
-                TRUE || $this->assertEquals('DEU', $result->getCountry()->getCode());
-                TRUE || $this->assertEquals('Germany', $result->getCountry()->getName());
+                true || $this->assertEquals('DEU', $result->getCountry()->getCode());
+                true || $this->assertEquals('Germany', $result->getCountry()->getName());
                 break;
             }
         }

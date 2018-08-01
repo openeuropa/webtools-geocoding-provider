@@ -17,11 +17,13 @@ pipeline:
     commands:
       - composer install
 
-  grumphp:
-    group: test
-    image: fpfis/httpd-php-dev:7.1
-    commands:
-      - ./vendor/bin/grumphp run
+# The code review tool is not yet stable for pure PHP 7 libraries. It throws a
+# large number of false positives. Re-enable this once the tool works properly.
+#  grumphp:
+#    group: test
+#    image: fpfis/httpd-php-dev:7.1
+#    commands:
+#      - ./vendor/bin/grumphp run
 
   phpunit:
     group: test

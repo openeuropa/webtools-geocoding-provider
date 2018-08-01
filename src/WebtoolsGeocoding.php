@@ -41,7 +41,9 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
     {
         $address = $query->getText();
         if (\filter_var($address, FILTER_VALIDATE_IP)) {
-            throw new UnsupportedOperation('The WebtoolsGeocoding provider does not support IP addresses, only street addresses.');
+            throw new UnsupportedOperation(
+                'The WebtoolsGeocoding provider does not support IP addresses, only street addresses.'
+            );
         }
 
         // Save a request if no valid address entered
@@ -166,8 +168,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
 
             if ($this->containsNumber(reset($street_parts))) {
                 $address_data['streetNumber'] = array_shift($street_parts);
-            }
-            elseif ($this->containsNumber(end($street_parts))) {
+            } elseif ($this->containsNumber(end($street_parts))) {
                 $address_data['streetNumber'] = array_pop($street_parts);
             }
 
@@ -242,5 +243,4 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
     {
         return preg_match('/\p{L}/', $string) === 1;
     }
-
 }
