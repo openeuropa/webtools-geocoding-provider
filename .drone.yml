@@ -1,0 +1,32 @@
+workspace:
+  base: /test
+  path: webtools-geocoding-provider
+
+services:
+  web:
+    image: fpfis/httpd-php-dev:7.1
+    environment:
+      - DOCUMENT_ROOT=/test/webtools-geocoding-provider
+
+pipeline:
+  composer-install:
+    group: prepare
+    image: fpfis/httpd-php-dev:7.1
+    volumes:
+      - /cache:/cache
+    commands:
+      - composer install
+
+# The code review tool is not yet stable for pure PHP 7 libraries. It throws a
+# large number of false positives. Re-enable this once the tool works properly.
+#  grumphp:
+#    group: test
+#    image: fpfis/httpd-php-dev:7.1
+#    commands:
+#      - ./vendor/bin/grumphp run
+
+  phpunit:
+    group: test
+    image: fpfis/httpd-php-dev:7.1
+    commands:
+      - ./vendor/bin/phpunit
