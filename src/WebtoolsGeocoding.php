@@ -52,19 +52,19 @@ class WebtoolsGeocoding extends AbstractHttpProvider implements Provider
         }
 
         $url = sprintf(self::ENDPOINT_URL, urlencode($address), $query->getLimit(), $query->getLocale());
-        $content = $this->getUrlContents($url);
-        $json = \json_decode($content);
+        $json = $this->getUrlContents($url);
+        $content = \json_decode($json);
 
-        if (empty($json)) {
+        if (empty($content)) {
             throw InvalidServerResponse::create($url);
         }
 
-        if (empty($json->geocodingRequestsCollection)) {
+        if (empty($content->geocodingRequestsCollection)) {
             return new AddressCollection([]);
         }
 
         $results = [];
-        foreach ($json->geocodingRequestsCollection as $collection) {
+        foreach ($content->geocodingRequestsCollection as $collection) {
             if (empty($collection->result->features)) {
                 continue;
             }
