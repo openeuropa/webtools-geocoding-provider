@@ -12,11 +12,9 @@ declare(strict_types=1);
 
 namespace OpenEuropa\Provider\WebtoolsGeocoding\Tests;
 
-use Geocoder\Collection;
 use Geocoder\IntegrationTest\BaseTestCase;
 use Geocoder\Location;
 use Geocoder\Query\GeocodeQuery;
-use Geocoder\Query\ReverseQuery;
 use OpenEuropa\Provider\WebtoolsGeocoding\WebtoolsGeocoding;
 
 class WebtoolsGeocodingTest extends BaseTestCase
@@ -66,7 +64,7 @@ class WebtoolsGeocodingTest extends BaseTestCase
         $this->assertEquals(48.865195518466, $result->getCoordinates()->getLatitude(), '', 0.0001);
         $this->assertEquals(2.3987030416067, $result->getCoordinates()->getLongitude(), '', 0.0001);
         $this->assertEquals(10, $result->getStreetNumber());
-        $this->assertEquals('Avenue Gambetta', $result->getStreetName());
+        $this->assertEquals('10 Avenue Gambetta', $result->getStreetName());
         $this->assertEquals(75020, $result->getPostalCode());
         $this->assertEquals('Paris', $result->getLocality());
         $this->assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
@@ -81,7 +79,7 @@ class WebtoolsGeocodingTest extends BaseTestCase
     /**
      * @dataProvider geocodeWithCityProvider
      */
-    public function testGeocodeWithCity(string $region, float $longitude, float $latitude)
+    public function testGeocodeWithCity(string $region, string $sub_region, string $country_code, float $longitude, float $latitude): void
     {
         $provider = new WebtoolsGeocoding($this->getHttpClient());
         $results = $provider->geocodeQuery(GeocodeQuery::create('Hannover'));
@@ -102,12 +100,13 @@ class WebtoolsGeocodingTest extends BaseTestCase
                 $this->assertNull($result->getStreetName());
                 $this->assertNull($result->getPostalCode());
                 $this->assertEquals('Hannover', $result->getLocality());
-                $this->assertCount(1, $result->getAdminLevels());
+                $this->assertCount(2, $result->getAdminLevels());
                 $this->assertEquals($region, $result->getAdminLevels()->get(1)->getName());
+                $this->assertEquals($sub_region, $result->getAdminLevels()->get(2)->getName());
+                $this->assertEquals($country_code, $result->getCountry()->getCode());
 
                 // The following data is not returned yet in the current implementation
                 // of the Webtools Geocoding API.
-                true || $this->assertEquals('DEU', $result->getCountry()->getCode());
                 true || $this->assertEquals('Germany', $result->getCountry()->getName());
                 break;
             }
@@ -128,23 +127,24 @@ class WebtoolsGeocodingTest extends BaseTestCase
         return [
             [
                 'region' => 'Niedersachsen',
+                'sub_region' => 'Region Hannover',
+                'country_code' => 'DEU',
                 'longitude' => 9.738150,
                 'latitude' => 52.37227,
             ],
             [
                 'region' => 'Maryland',
+                'sub_region' => 'Frederick',
+                'country_code' => 'USA',
                 'longitude' => -77.44026,
                 'latitude' => 39.39177,
             ],
             [
                 'region' => 'North Dakota',
+                'sub_region' => 'Oliver County',
+                'country_code' => 'USA',
                 'longitude' => -101.42143,
                 'latitude' => 47.11129,
-            ],
-            [
-                'region' => 'Mississippi',
-                'longitude' => -90.06299,
-                'latitude' => 32.51879,
             ],
         ];
     }
