@@ -13,6 +13,8 @@ use Geocoder\Model\Address;
 use Geocoder\Model\AddressCollection;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
+use Http\Client\HttpClient;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Webtools Geocoding provider for Geocoder PHP.
@@ -23,6 +25,21 @@ class WebtoolsGeocoding extends AbstractHttpProvider {
    * @var string
    */
   const ENDPOINT_URL = 'https://europa.eu/webtools/rest/geocoding/?f=json&text=%s&maxLocations=%d&outFields=*';
+
+  /**
+   * Optional referer.
+   *
+   * @var string
+   */
+  private $referer;
+
+  /**
+   * Constructs a WebtoolsGeocoding provider.
+   */
+  public function __construct(HttpClient $client, string $referer = '') {
+    parent::__construct($client);
+    $this->referer = $referer;
+  }
 
   /**
    * {@inheritdoc}
@@ -134,4 +151,17 @@ class WebtoolsGeocoding extends AbstractHttpProvider {
 
     return $address_data;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getRequest(string $url): RequestInterface {
+    $request = $this->getMessageFactory()->createRequest('GET', $url);
+    if (!empty($this->referer)) {
+      $request = $request->withHeader('Referer', $this->referer);
+    }
+
+    return $request;
+  }
+
 }
