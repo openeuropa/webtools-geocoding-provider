@@ -156,7 +156,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider {
    * {@inheritdoc}
    */
   protected function getRequest(string $url): RequestInterface {
-    $request = $this->getMessageFactory()->createRequest('GET', $url);
+    $request = parent::getRequest($url);
     if (!empty($this->referer)) {
       $request = $request->withHeader('Referer', $this->referer);
     }
