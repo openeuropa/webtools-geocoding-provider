@@ -36,7 +36,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider {
   /**
    * Constructs a WebtoolsGeocoding provider.
    */
-  public function __construct(HttpClient $client, string $referer = '') {
+  public function __construct(HttpClient $client, string $referer = NULL) {
     parent::__construct($client);
     $this->referer = $referer;
   }
