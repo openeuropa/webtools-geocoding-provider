@@ -4,29 +4,48 @@ workspace:
 
 services:
   web:
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     environment:
       - DOCUMENT_ROOT=/test/webtools-geocoding-provider
 
 pipeline:
-  composer-install:
+  composer-install-lowest:
     group: prepare
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     volumes:
       - /cache:/cache
     commands:
-      - composer install
+      - composer update --prefer-lowest --ansi
+    when:
+      matrix:
+        COMPOSER_BOUNDARY: lowest
 
-# The code review tool is not yet stable for pure PHP 7 libraries. It throws a
-# large number of false positives. Re-enable this once the tool works properly.
-#  grumphp:
-#    group: test
-#    image: fpfis/httpd-php-ci:7.1
-#    commands:
-#      - ./vendor/bin/grumphp run
+  composer-install-highest:
+    group: prepare
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
+    volumes:
+      - /cache:/cache
+    commands:
+      - composer install --ansi
+    when:
+      matrix:
+        COMPOSER_BOUNDARY: highest
+
+  grumphp:
+    group: test
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
+    commands:
+      - ./vendor/bin/grumphp run
 
   phpunit:
     group: test
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     commands:
       - ./vendor/bin/phpunit
+matrix:
+  COMPOSER_BOUNDARY:
+    - lowest
+    - highest
+  PHP_VERSION:
+    - 7.2
+    - 7.3
