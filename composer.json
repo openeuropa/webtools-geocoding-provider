@@ -6,7 +6,7 @@
     "homepage": "https://github.com/openeuropa/webtools-geocoding-provider",
     "license": "EUPL",
     "require": {
-        "php": "~7.2.0 || ~7.3.0",
+        "php": ">=7.2",
         "geocoder-php/common-http": "^4.2",
         "willdurand/geocoder": "^4.0"
     },
