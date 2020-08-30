@@ -4,14 +4,14 @@ workspace:
 
 services:
   web:
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     environment:
       - DOCUMENT_ROOT=/test/webtools-geocoding-provider
 
 pipeline:
   composer-install:
     group: prepare
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     volumes:
       - /cache:/cache
     commands:
@@ -21,12 +21,19 @@ pipeline:
 # large number of false positives. Re-enable this once the tool works properly.
 #  grumphp:
 #    group: test
-#    image: fpfis/httpd-php-ci:7.1
+#    image: fpfis/httpd-php-ci:${PHP_VERSION}
 #    commands:
 #      - ./vendor/bin/grumphp run
 
   phpunit:
     group: test
-    image: fpfis/httpd-php-ci:7.1
+    image: fpfis/httpd-php-ci:${PHP_VERSION}
     commands:
       - ./vendor/bin/phpunit
+
+matrix:
+  PHP_VERSION:
+    - 7.1
+    - 7.2
+    - 7.3
+    - 7.4
