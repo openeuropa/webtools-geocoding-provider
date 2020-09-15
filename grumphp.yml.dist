@@ -3,6 +3,21 @@ imports:
 
 parameters:
     tasks:
+        # PHP Lint
+        phplint:
+            triggered_by: ['php', 'module', 'install', 'profile', 'inc', 'theme']
+            exclude: '%tasks.phplint.exclude%'
+            metadata:
+                priority: 5000
+
+        # JSON Lint
+        jsonlint:
+            detect_key_conflicts: true
+            ignore_patterns: '%tasks.jsonlint.ignore_patterns%'
+            metadata:
+                priority: 4000
+
+        # PHP Code Sniffer.
         phpcs:
             standard: '%tasks.phpcs.standard%'
             ignore_patterns: '%tasks.phpcs.ignore_patterns%'
@@ -11,3 +26,20 @@ parameters:
             warning_severity: '%tasks.phpcs.warning_severity%'
             metadata:
                 priority: 3000
+
+        # PHP Mess Detector.
+        phpmd:
+            exclude: '%tasks.phpmd.exclude%'
+            ruleset: '%tasks.phpmd.ruleset%'
+            triggered_by: '%tasks.phpmd.triggered_by%'
+            metadata:
+                priority: 1000
+
+        # Commit message format.
+        git_commit_message:
+            matchers: '%tasks.git_commit_message.matchers%'
+            case_insensitive: false
+            enforce_no_subject_trailing_period: false
+            multiline: false
+            max_body_width: 0
+            max_subject_width: 0
