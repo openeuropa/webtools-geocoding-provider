@@ -45,6 +45,14 @@ class WebtoolsGeocoding extends AbstractHttpProvider
     /**
      * {@inheritdoc}
      */
+    public function getName(): string
+    {
+        return 'webtools_geocoding';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
         $address = $query->getText();
@@ -84,14 +92,6 @@ class WebtoolsGeocoding extends AbstractHttpProvider
         }
 
         return new AddressCollection($results);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName(): string
-    {
-        return 'webtools_geocoding';
     }
 
     /**
