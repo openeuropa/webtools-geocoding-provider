@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace OpenEuropa\Provider\WebtoolsGeocoding\Tests;
 
@@ -10,8 +10,11 @@ use Http\Client\HttpClient;
 
 /**
  * Integration test for the WebtoolsGeocoding provider.
+ *
+ * @internal
+ * @coversNothing
  */
-class IntegrationTest extends ProviderIntegrationTest
+final class IntegrationTest extends ProviderIntegrationTest
 {
     /**
      * {@inheritdoc}
@@ -41,7 +44,7 @@ class IntegrationTest extends ProviderIntegrationTest
      */
     protected function getCacheDir()
     {
-        return __DIR__.'/.cached_responses';
+        return __DIR__ . '/.cached_responses';
     }
 
     /**
