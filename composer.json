@@ -28,8 +28,8 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
             "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpro/grumphp": true
         }
     }
