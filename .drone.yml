@@ -25,6 +25,7 @@ pipeline:
     volumes:
       - /cache:/cache
     commands:
+      - composer self-update --2
       - composer update --prefer-lowest --ansi
     when:
       matrix:
@@ -36,6 +37,7 @@ pipeline:
     volumes:
       - /cache:/cache
     commands:
+      - composer self-update --2
       - composer install --ansi
     when:
       matrix:
