@@ -4,7 +4,7 @@
     "description": "Webtools Geocoding provider for Geocoder PHP.",
     "keywords": [],
     "homepage": "https://github.com/openeuropa/webtools-geocoding-provider",
-    "license": "EUPL",
+    "license": "EUPL-1.2",
     "require": {
         "php": ">=7.4",
         "geocoder-php/common-http": "^4.3",
