@@ -14,7 +14,7 @@
   </php>
   <testsuites>
     <testsuite name="WebtoolsGeocoding test suite">
-      <directory>./tests/</directory>
+      <directory suffix=".php">./tests/</directory>
     </testsuite>
   </testsuites>
 </phpunit>
