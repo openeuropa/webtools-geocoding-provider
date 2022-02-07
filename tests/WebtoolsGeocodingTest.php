@@ -34,22 +34,18 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         static::assertEquals('webtools_geocoding', $provider->getName());
     }
 
-    /**
-     * @expectedException \Geocoder\Exception\UnsupportedOperation
-     * @expectedExceptionMessage The WebtoolsGeocoding provider does not support IP addresses, only street addresses.
-     */
     public function testGeocodeWithLocalhostIPv4()
     {
+        $this->expectException(\Geocoder\Exception\UnsupportedOperation::class);
+        $this->expectExceptionMessage("The WebtoolsGeocoding provider does not support IP addresses, only street addresses.");
         $provider = new WebtoolsGeocoding($this->getMockedHttpClient());
         $provider->geocodeQuery(GeocodeQuery::create('127.0.0.1'));
     }
 
-    /**
-     * @expectedException \Geocoder\Exception\UnsupportedOperation
-     * @expectedExceptionMessage The WebtoolsGeocoding provider does not support IP addresses, only street addresses.
-     */
     public function testGeocodeWithLocalhostIPv6()
     {
+        $this->expectException(\Geocoder\Exception\UnsupportedOperation::class);
+        $this->expectExceptionMessage("The WebtoolsGeocoding provider does not support IP addresses, only street addresses.");
         $provider = new WebtoolsGeocoding($this->getMockedHttpClient());
         $provider->geocodeQuery(GeocodeQuery::create('::1'));
     }
@@ -154,22 +150,18 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @expectedException \Geocoder\Exception\UnsupportedOperation
-     * @expectedExceptionMessage The WebtoolsGeocoding provider does not support IP addresses, only street addresses.
-     */
     public function testGeocodeWithRealIPv4()
     {
+        $this->expectException(\Geocoder\Exception\UnsupportedOperation::class);
+        $this->expectExceptionMessage("The WebtoolsGeocoding provider does not support IP addresses, only street addresses.");
         $provider = new WebtoolsGeocoding($this->getHttpClient());
         $provider->geocodeQuery(GeocodeQuery::create('88.188.221.14'));
     }
 
-    /**
-     * @expectedException \Geocoder\Exception\UnsupportedOperation
-     * @expectedExceptionMessage The WebtoolsGeocoding provider does not support IP addresses, only street addresses.
-     */
     public function testGeocodeWithRealIPv6()
     {
+        $this->expectException(\Geocoder\Exception\UnsupportedOperation::class);
+        $this->expectExceptionMessage("The WebtoolsGeocoding provider does not support IP addresses, only street addresses.");
         $provider = new WebtoolsGeocoding($this->getHttpClient());
         $provider->geocodeQuery(GeocodeQuery::create('::ffff:88.188.221.14'));
     }

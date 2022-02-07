@@ -4,16 +4,16 @@
     "description": "Webtools Geocoding provider for Geocoder PHP.",
     "keywords": [],
     "homepage": "https://github.com/openeuropa/webtools-geocoding-provider",
-    "license": "EUPL",
+    "license": "EUPL-1.2",
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "geocoder-php/common-http": "^4.3",
         "willdurand/geocoder": "^4.0"
     },
     "require-dev": {
-        "geocoder-php/provider-integration-tests": "~1.4.0",
-        "openeuropa/code-review": "dev-master",
-        "php-http/curl-client": "^1.7",
+        "geocoder-php/provider-integration-tests": "~1.5.0",
+        "openeuropa/code-review": "^2.0",
+        "php-http/curl-client": "^2.2",
         "phpunit/phpunit": "^7.5.15|~8|~9"
     },
     "provide": {
@@ -25,5 +25,12 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpro/grumphp": true
+        }
+    }
 }
