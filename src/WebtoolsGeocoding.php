@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace OpenEuropa\Provider\WebtoolsGeocoding;
 
@@ -24,7 +24,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider
     /**
      * @var string
      */
-    const ENDPOINT_URL = 'https://europa.eu/webtools/rest/geocoding/?f=json&text=%s&maxLocations=%d&outFields=*';
+    const ENDPOINT_URL = 'https://europa.eu/webtools/rest/geocoding/?address=%s&mode=10&outFields=*';
 
     /**
      * Optional referer.
@@ -67,28 +67,32 @@ class WebtoolsGeocoding extends AbstractHttpProvider
             throw new InvalidArgument('Address cannot be empty.');
         }
 
-        $url = sprintf(self::ENDPOINT_URL, urlencode($address), $query->getLimit());
-        $json = $this->getUrlContents($url);
-        $content = json_decode($json);
+        $url = sprintf(self::ENDPOINT_URL, urlencode($address));
+        $content = json_decode($this->getUrlContents($url));
 
         if (empty($content)) {
             throw InvalidServerResponse::create($url);
         }
 
-        if (empty($content->locations)) {
+        if (empty($content->addressesFound)) {
             return new AddressCollection([]);
         }
 
         $results = [];
-        foreach ($content->locations as $location) {
-            if (empty($location->feature)) {
+        foreach ($content->geocodingRequestsCollection as $request) {
+            if (
+                empty($request->foundCount)
+                || $request->responseMessage !== 'OK'
+                || $request->responseCode !== 200
+                || empty($request->result->features)
+            ) {
                 continue;
             }
-
-            $address_data = $this->getAddressData($location->feature);
-            $address_data['providedBy'] = $this->getName();
-
-            $results[] = Address::createFromArray($address_data);
+            foreach ($request->result->features as $feature) {
+                if ($addressData = $this->getAddressData($feature)) {
+                    $results[] = Address::createFromArray($addressData);
+                }
+            }
         }
 
         return new AddressCollection($results);
@@ -109,52 +113,60 @@ class WebtoolsGeocoding extends AbstractHttpProvider
      *   The location feature JSON object, as returned by the Webtools Geocoding
      *   REST API.
      *
-     * @return array
+     * @return array|null
      *   An array of estimated address data, with the following keys:
      *   - streetNumber: the street number.
      *   - streetName: the street name.
      *   - locality: the locality.
      *   - postalCode: the postal code.
+     *   - country: the country name.
      *   - countryCode: the country code.
      *   - longitude: the longitude.
      *   - latitude: the latitude.
      *   - adminLevels: an array of administration levels.
+     *   If an address cannot be determined, it returns null.
      */
-    protected function getAddressData(\stdClass $feature): array
+    protected function getAddressData(\stdClass $feature): ?array
     {
-        $attributes = $feature->attributes ?? null;
-        $geometry = $feature->geometry ?? null;
+        $addressData = ['providedBy' => $this->getName()];
 
-        $address_data = [];
-
-        $address_data['latitude'] = $geometry->y ?? null;
-        $address_data['longitude'] = $geometry->x ?? null;
+        if (
+            !isset($feature->geometry->coordinates[0])
+            || !is_float($feature->geometry->coordinates[0])
+            || !isset($feature->geometry->coordinates[1])
+            || !is_float($feature->geometry->coordinates[1])
+        ) {
+            return null;
+        }
+        $addressData['longitude'] = $feature->geometry->coordinates[0];
+        $addressData['latitude'] = $feature->geometry->coordinates[1];
 
         $mapping = [
-            'streetName' => 'StAddr',
-            'streetNumber' => 'AddNum',
-            'locality' => 'City',
-            'postalCode' => 'Postal',
-            'countryCode' => 'Country',
+            'streetName' => 'street',
+            'streetNumber' => 'housenumber',
+            'locality' => 'city',
+            'postalCode' => 'postcode',
+            'country' => 'country',
+            'countryCode' => 'countrycode'
         ];
 
-        foreach ($mapping as $address_part => $attribute_id) {
-            $address_data[$address_part] = !empty($attributes->{$attribute_id}) ? $attributes->{$attribute_id} : null;
+        foreach ($mapping as $addressPart => $propertyId) {
+            $addressData[$addressPart] = !empty($feature->properties->{$propertyId}) ? $feature->properties->{$propertyId} : null;
         }
 
-        $admin_levels = [];
-        foreach (['Region', 'Subregion'] as $i => $attribute_id) {
-            if (!empty($attributes->{$attribute_id})) {
-                $admin_levels[] = [
-                    'name' => $attributes->{$attribute_id},
+        $adminLevels = [];
+        foreach (['Region', 'Subregion'] as $i => $propertyId) {
+            if (!empty($feature->properties->{$propertyId})) {
+                $adminLevels[] = [
+                    'name' => $feature->properties->{$propertyId},
                     'level' => $i + 1,
                 ];
             }
         }
 
-        $address_data['adminLevels'] = $admin_levels;
+        $addressData['adminLevels'] = $adminLevels;
 
-        return $address_data;
+        return $addressData;
     }
 
     /**
