@@ -52,6 +52,9 @@ class WebtoolsGeocoding extends AbstractHttpProvider
 
     /**
      * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
