@@ -80,8 +80,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider
 
         $results = [];
         foreach ($content->geocodingRequestsCollection as $request) {
-            if (
-                empty($request->foundCount)
+            if (empty($request->foundCount)
                 || $request->responseMessage !== 'OK'
                 || $request->responseCode !== 200
                 || empty($request->result->features)
@@ -130,8 +129,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider
     {
         $addressData = ['providedBy' => $this->getName()];
 
-        if (
-            !isset($feature->geometry->coordinates[0])
+        if (!isset($feature->geometry->coordinates[0])
             || !is_float($feature->geometry->coordinates[0])
             || !isset($feature->geometry->coordinates[1])
             || !is_float($feature->geometry->coordinates[1])
