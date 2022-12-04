@@ -6,7 +6,7 @@ namespace OpenEuropa\Provider\WebtoolsGeocoding\Tests;
 
 use Geocoder\IntegrationTest\ProviderIntegrationTest;
 use OpenEuropa\Provider\WebtoolsGeocoding\WebtoolsGeocoding;
-use Http\Client\HttpClient;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * Integration test for the WebtoolsGeocoding provider.
@@ -34,7 +34,7 @@ final class IntegrationTest extends ProviderIntegrationTest
     /**
      * {@inheritdoc}
      */
-    protected function createProvider(HttpClient $httpClient)
+    protected function createProvider(ClientInterface $httpClient)
     {
         return new WebtoolsGeocoding($httpClient);
     }

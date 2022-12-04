@@ -61,50 +61,45 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         /** @var Location $result */
         $result = $results->first();
         static::assertInstanceOf('\Geocoder\Model\Address', $result);
-        static::assertEquals(48.8631927, $result->getCoordinates()->getLatitude(), '', 0.0001);
-        static::assertEquals(2.3890894, $result->getCoordinates()->getLongitude(), '', 0.0001);
+        static::assertEquals(48.8631927, $result->getCoordinates()->getLatitude());
+        static::assertEquals(2.3890894, $result->getCoordinates()->getLongitude());
         static::assertEquals(10, $result->getStreetNumber());
         static::assertEquals('Avenue Gambetta', $result->getStreetName());
         static::assertEquals(75020, $result->getPostalCode());
         static::assertEquals('Paris', $result->getLocality());
-
-        // The following data is not returned yet in the current implementation
-        // of the Webtools Geocoding API.
-        true || static::assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
-        true || static::assertCount(2, $result->getAdminLevels());
-        true || static::assertEquals('Paris', $result->getAdminLevels()->get(2)->getName());
+        static::assertEquals('Île-de-France', $result->getAdminLevels()->get(1)->getName());
+        static::assertCount(5, $result->getAdminLevels());
+        static::assertEquals('Paris', $result->getAdminLevels()->get(2)->getName());
     }
 
     /**
      * @dataProvider geocodeWithCityProvider
      */
-    public function testGeocodeWithCity(int $delta, float $longitude, float $latitude): void
+    public function testGeocodeWithCity(string $level1, string $level2, string $country_code, float $longitude, float $latitude): void
     {
         $provider = new WebtoolsGeocoding($this->getHttpClient());
-        $results = $provider->geocodeQuery(GeocodeQuery::create('Hannover'));
+        $results = $provider->geocodeQuery(GeocodeQuery::create('London'));
 
         static::assertInstanceOf('Geocoder\Model\AddressCollection', $results);
-        static::assertCount(10, $results);
+        static::assertCount(5, $results);
 
         $result_found = false;
         /** @var Location $result */
-        foreach ($results as $index => $result) {
-            if ($index === $delta) {
+        foreach ($results as $result) {
+            if ($result->getAdminLevels()->get(1)->getName() === $level1) {
                 $result_found = true;
 
                 static::assertInstanceOf('\Geocoder\Model\Address', $result);
-                static::assertEquals($longitude, $result->getCoordinates()->getLongitude()/*, '', 0.0001*/);
-                static::assertEquals($latitude, $result->getCoordinates()->getLatitude(), '', 0.0001);
+                static::assertEquals($longitude, $result->getCoordinates()->getLongitude());
+                static::assertEquals($latitude, $result->getCoordinates()->getLatitude());
                 static::assertNull($result->getStreetNumber());
                 static::assertNull($result->getStreetName());
                 static::assertNull($result->getPostalCode());
+                static::assertCount(2, $result->getAdminLevels());
+                static::assertEquals($level1, $result->getAdminLevels()->get(1)->getName());
+                static::assertEquals($level2, $result->getAdminLevels()->get(2)->getName());
+                static::assertEquals($country_code, $result->getCountry()->getCode());
 
-                // The following data is not returned yet in the current implementation
-                // of the Webtools Geocoding API.
-                true || static::assertEquals('Germany', $result->getCountry()->getName());
-                true || static::assertCount(2, $result->getAdminLevels());
-                true || static::assertEquals($region, $result->getAdminLevels()->get(1)->getName());
-                true || static::assertEquals($sub_region, $result->getAdminLevels()->get(2)->getName());
                 break;
             }
         }
@@ -123,19 +118,18 @@ final class WebtoolsGeocodingTest extends BaseTestCase
     {
         return [
             [
-                'delta' => 0,
-                'longitude' => 9.738150000000076,
-                'latitude' => 52.37227000000007,
+                'level1' => 'England',
+                'level2' => 'Greater London',
+                'country_code' => 'GB',
+                'longitude' => -0.1276474,
+                'latitude' => 51.5073219,
             ],
             [
-                'delta' => 2,
-                'longitude' => -101.42142999999999,
-                'latitude' => 47.111290000000054,
-            ],
-            [
-                'delta' => 4,
-                'longitude' => 9.740000000000066,
-                'latitude' => 52.44889000000006,
+                'level1' => 'Ontario',
+                'level2' => 'Southwestern Ontario',
+                'country_code' => 'CA',
+                'longitude' => -81.2291529,
+                'latitude' => 42.9537654,
             ],
         ];
     }
