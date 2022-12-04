@@ -140,6 +140,9 @@ class WebtoolsGeocoding extends AbstractHttpProvider
      *   - longitude: the longitude.
      *   - latitude: the latitude.
      *   - adminLevels: an array of administration levels.
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function getAddressData(\stdClass $feature): ?array
     {
