@@ -61,8 +61,8 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         /** @var Location $result */
         $result = $results->first();
         static::assertInstanceOf('\Geocoder\Model\Address', $result);
-        static::assertEquals(48.865195518466, $result->getCoordinates()->getLatitude(), '', 0.0001);
-        static::assertEquals(2.3987030416067, $result->getCoordinates()->getLongitude(), '', 0.0001);
+        static::assertEquals(48.8651955184661, $result->getCoordinates()->getLatitude(), '', 0.0001);
+        static::assertEquals(2.3987030416067276, $result->getCoordinates()->getLongitude(), '', 0.0001);
         static::assertEquals(10, $result->getStreetNumber());
         static::assertEquals('10 Avenue Gambetta', $result->getStreetName());
         static::assertEquals(75020, $result->getPostalCode());
@@ -130,22 +130,22 @@ final class WebtoolsGeocodingTest extends BaseTestCase
                 'region' => 'Niedersachsen',
                 'sub_region' => 'Region Hannover',
                 'country_code' => 'DEU',
-                'longitude' => 9.738150,
-                'latitude' => 52.37227,
+                'longitude' => 9.738150000000076,
+                'latitude' => 52.37227000000007,
             ],
             [
                 'region' => 'Maryland',
                 'sub_region' => 'Frederick',
                 'country_code' => 'USA',
-                'longitude' => -77.44026,
-                'latitude' => 39.39177,
+                'longitude' => -77.44025999999997,
+                'latitude' => 39.391770000000065,
             ],
             [
                 'region' => 'North Dakota',
                 'sub_region' => 'Oliver County',
                 'country_code' => 'USA',
-                'longitude' => -101.42143,
-                'latitude' => 47.11129,
+                'longitude' => -101.42142999999999,
+                'latitude' => 47.111290000000054,
             ],
         ];
     }
