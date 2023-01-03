@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.3.0) (2023-01-03)
+
+[Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.2.0...0.3.0)
+
+**Merged pull requests:**
+
+- EWPP-2921: Update to PHP 8.1. [\#18](https://github.com/openeuropa/webtools-geocoding-provider/pull/18) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [0.2.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.2.0) (2022-02-07)
 
 [Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.1.2...0.2.0)
@@ -11,6 +19,7 @@
 
 **Merged pull requests:**
 
+- EWPP-0000: Prepare for 0.2.0 release. [\#15](https://github.com/openeuropa/webtools-geocoding-provider/pull/15) ([hernani](https://github.com/hernani))
 - EWPP-1910: Update to PHP 7.4/8.0. [\#14](https://github.com/openeuropa/webtools-geocoding-provider/pull/14) ([hernani](https://github.com/hernani))
 - EWPP-721: Update xdebug configuration. [\#13](https://github.com/openeuropa/webtools-geocoding-provider/pull/13) ([22Alexandra](https://github.com/22Alexandra))
 - EWPP-516: Update docker php image. [\#12](https://github.com/openeuropa/webtools-geocoding-provider/pull/12) ([22Alexandra](https://github.com/22Alexandra))
