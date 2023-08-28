@@ -127,8 +127,8 @@ class WebtoolsGeocoding extends AbstractHttpProvider
 
         $address_data = [];
 
-        $address_data['latitude'] = $geometry[0] ?? null;
-        $address_data['longitude'] = $geometry[1] ?? null;
+        $address_data['longitude'] = $geometry[0] ?? NULL;
+        $address_data['latitude'] = $geometry[1] ?? NULL;
 
         $mapping = [
             'streetName' => 'street',
