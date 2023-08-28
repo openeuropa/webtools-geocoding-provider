@@ -75,17 +75,17 @@ class WebtoolsGeocoding extends AbstractHttpProvider
             throw InvalidServerResponse::create($url);
         }
 
-        if (empty($content->locations)) {
+        if (empty($content->features)) {
             return new AddressCollection([]);
         }
 
         $results = [];
-        foreach ($content->locations as $location) {
-            if (empty($location->feature)) {
+        foreach ($content->features as $feature) {
+            if (empty($feature)) {
                 continue;
             }
 
-            $address_data = $this->getAddressData($location->feature);
+            $address_data = $this->getAddressData($feature);
             $address_data['providedBy'] = $this->getName();
 
             $results[] = Address::createFromArray($address_data);
@@ -122,20 +122,20 @@ class WebtoolsGeocoding extends AbstractHttpProvider
      */
     protected function getAddressData(\stdClass $feature): array
     {
-        $attributes = $feature->attributes ?? null;
-        $geometry = $feature->geometry ?? null;
+        $attributes = $feature->properties ?? null;
+        $geometry = $feature->geometry->coordinates ?? null;
 
         $address_data = [];
 
-        $address_data['latitude'] = $geometry->y ?? null;
-        $address_data['longitude'] = $geometry->x ?? null;
+        $address_data['latitude'] = $geometry[0] ?? null;
+        $address_data['longitude'] = $geometry[1] ?? null;
 
         $mapping = [
-            'streetName' => 'StAddr',
-            'streetNumber' => 'AddNum',
-            'locality' => 'City',
-            'postalCode' => 'Postal',
-            'countryCode' => 'Country',
+            'streetName' => 'street',
+            'streetNumber' => 'housenumber',
+            'locality' => 'city',
+            'postalCode' => 'postcode',
+            'countryCode' => 'countrycode',
         ];
 
         foreach ($mapping as $address_part => $attribute_id) {
