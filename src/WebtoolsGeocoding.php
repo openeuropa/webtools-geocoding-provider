@@ -13,7 +13,7 @@ use Geocoder\Model\Address;
 use Geocoder\Model\AddressCollection;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
-use Http\Client\HttpClient;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -36,7 +36,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider
     /**
      * Constructs a WebtoolsGeocoding provider.
      */
-    public function __construct(HttpClient $client, ?string $referer = null)
+    public function __construct(ClientInterface $client, ?string $referer = null)
     {
         parent::__construct($client);
         $this->referer = $referer;

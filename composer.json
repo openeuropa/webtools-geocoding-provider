@@ -6,15 +6,17 @@
     "homepage": "https://github.com/openeuropa/webtools-geocoding-provider",
     "license": "EUPL-1.2",
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.3",
         "geocoder-php/common-http": "^4.3",
-        "willdurand/geocoder": "^4.0"
+        "willdurand/geocoder": "^4.0",
+        "symfony/http-client": "^7.3"
     },
     "require-dev": {
-        "geocoder-php/provider-integration-tests": "~1.5.0",
+        "geocoder-php/provider-integration-tests": "^1.5.0",
         "openeuropa/code-review": "^2.0",
         "php-http/curl-client": "^2.2",
-        "phpunit/phpunit": "^7.5.15|~8|~9"
+        "phpunit/phpunit": "^7.5.15|~8|~9",
+        "psr/http-factory": "^1.0"
     },
     "provide": {
         "geocoder-php/provider-implementation": "1.0"
@@ -30,7 +32,8 @@
         "allow-plugins": {
             "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpro/grumphp": true
+            "phpro/grumphp": true,
+            "php-http/discovery": true
         }
     }
 }
