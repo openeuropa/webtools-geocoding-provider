@@ -1,10 +1,20 @@
 # Changelog
 
+## [0.4.1](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.4.1) (2025-09-15)
+
+[Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.4.0...0.4.1)
+
+**Merged pull requests:**
+
+- EWPP-5992: Change symfony/http-client constraint. [\#24](https://github.com/openeuropa/webtools-geocoding-provider/pull/24) ([hernani](https://github.com/hernani))
+
 ## [0.4.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.4.0) (2025-09-15)
 
 [Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.3.0...0.4.0)
+
 **Merged pull requests:**
 
+- EWPP-0000: Prepare release 0.4.0. [\#23](https://github.com/openeuropa/webtools-geocoding-provider/pull/23) ([hernani](https://github.com/hernani))
 - EWPP-5992: Move CI to github actions. [\#22](https://github.com/openeuropa/webtools-geocoding-provider/pull/22) ([hernani](https://github.com/hernani))
 
 ## [0.3.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.3.0) (2023-01-03)
