@@ -1,11 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.4.0) (2025-09-15)
+
+[Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.3.0...0.4.0)
+**Merged pull requests:**
+
+- EWPP-5992: Move CI to github actions. [\#22](https://github.com/openeuropa/webtools-geocoding-provider/pull/22) ([hernani](https://github.com/hernani))
+
 ## [0.3.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.3.0) (2023-01-03)
 
 [Full Changelog](https://github.com/openeuropa/webtools-geocoding-provider/compare/0.2.0...0.3.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.3.0. [\#19](https://github.com/openeuropa/webtools-geocoding-provider/pull/19) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-2921: Update to PHP 8.1. [\#18](https://github.com/openeuropa/webtools-geocoding-provider/pull/18) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.2.0](https://github.com/openeuropa/webtools-geocoding-provider/tree/0.2.0) (2022-02-07)
