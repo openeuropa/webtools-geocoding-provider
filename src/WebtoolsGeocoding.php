@@ -24,7 +24,7 @@ class WebtoolsGeocoding extends AbstractHttpProvider
     /**
      * @var string
      */
-    const ENDPOINT_URL = 'https://europa.eu/webtools/rest/geocoding/?f=json&text=%s&maxLocations=%d&outFields=*';
+    const ENDPOINT_URL = 'https://webtools.europa.eu/rest/geocoding/?f=json&text=%s&maxLocations=%d&outFields=*';
 
     /**
      * Optional referer.
