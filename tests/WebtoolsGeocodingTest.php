@@ -61,8 +61,8 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         /** @var Location $result */
         $result = $results->first();
         static::assertInstanceOf('\Geocoder\Model\Address', $result);
-        static::assertEquals(48.863101009681, $result->getCoordinates()->getLatitude(), '', 0.0001);
-        static::assertEquals(2.3887579992361, $result->getCoordinates()->getLongitude(), '', 0.0001);
+        static::assertEquals(48.8631010096814, $result->getCoordinates()->getLatitude(), '', 0.0001);
+        static::assertEquals(2.3887579992361054, $result->getCoordinates()->getLongitude(), '', 0.0001);
         static::assertEquals(10, $result->getStreetNumber());
         static::assertEquals('10 Avenue Gambetta', $result->getStreetName());
         static::assertEquals(75020, $result->getPostalCode());
@@ -130,8 +130,8 @@ final class WebtoolsGeocodingTest extends BaseTestCase
                 'region' => 'Niedersachsen',
                 'sub_region' => 'Region Hannover',
                 'country_code' => 'DEU',
-                'longitude' => 9.738083999,
-                'latitude' => 52.374550999,
+                'longitude' => 9.738083999000025,
+                'latitude' => 52.374550999000064,
             ],
             [
                 'region' => 'Maryland',
