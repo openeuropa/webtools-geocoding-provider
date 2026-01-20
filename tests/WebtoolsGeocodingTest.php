@@ -56,13 +56,13 @@ final class WebtoolsGeocodingTest extends BaseTestCase
         $results = $provider->geocodeQuery(GeocodeQuery::create('10 avenue Gambetta, Paris, France'));
 
         static::assertInstanceOf('Geocoder\Model\AddressCollection', $results);
-        static::assertCount(5, $results);
+        static::assertCount(4, $results);
 
         /** @var Location $result */
         $result = $results->first();
         static::assertInstanceOf('\Geocoder\Model\Address', $result);
-        static::assertEquals(48.8651955184661, $result->getCoordinates()->getLatitude(), '', 0.0001);
-        static::assertEquals(2.3987030416067276, $result->getCoordinates()->getLongitude(), '', 0.0001);
+        static::assertEquals(48.8631010096814, $result->getCoordinates()->getLatitude(), '', 0.0001);
+        static::assertEquals(2.3887579992361054, $result->getCoordinates()->getLongitude(), '', 0.0001);
         static::assertEquals(10, $result->getStreetNumber());
         static::assertEquals('10 Avenue Gambetta', $result->getStreetName());
         static::assertEquals(75020, $result->getPostalCode());
@@ -130,22 +130,22 @@ final class WebtoolsGeocodingTest extends BaseTestCase
                 'region' => 'Niedersachsen',
                 'sub_region' => 'Region Hannover',
                 'country_code' => 'DEU',
-                'longitude' => 9.738150000000076,
-                'latitude' => 52.37227000000007,
+                'longitude' => 9.738083999000025,
+                'latitude' => 52.374550999000064,
             ],
             [
                 'region' => 'Maryland',
-                'sub_region' => 'Frederick',
+                'sub_region' => 'Frederick County',
                 'country_code' => 'USA',
-                'longitude' => -77.44025999999997,
-                'latitude' => 39.391770000000065,
+                'longitude' => -77.440264,
+                'latitude' => 39.391769,
             ],
             [
                 'region' => 'North Dakota',
                 'sub_region' => 'Oliver County',
                 'country_code' => 'USA',
-                'longitude' => -101.42142999999999,
-                'latitude' => 47.111290000000054,
+                'longitude' => -101.4197883,
+                'latitude' => 47.1113028,
             ],
         ];
     }
